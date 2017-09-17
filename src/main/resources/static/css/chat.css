@@ -1,0 +1,183 @@
+.container {
+    padding: 0;
+    width: 100%;
+    min-width: 300px;
+}
+
+.login-form {
+    text-align: center;
+    height: 100vh;
+}
+
+.login-form form {
+    max-width: 400px;
+    margin: auto;
+}
+
+.navbar h1 {
+	margin-top: 15px;
+	font-size: 22px;
+	float:left;
+	color: #fff;
+}
+#nav_header{
+    z-index: 2000;
+}
+.nav_row{
+    margin-top: 50px;
+}
+.chat-box {
+	padding-bottom: 75px;
+    margin-top: 50px;
+}
+
+.visible_popover {
+    display: block;
+    position: relative;
+    max-width: inherit;
+    margin-bottom: 10px;
+}
+
+.chat-box .chat-input {
+    position: fixed;
+    bottom: 0;
+    right: -5px;
+    width: inherit;
+    z-index: 1998;
+    background: #fff;
+    padding-top: 5px;
+}
+
+.chat-input .form-group {
+    margin-left: 5px;
+    margin-right: 10px;
+}
+
+.wrapper, .row {
+    height: 100%;
+    margin-left:0;
+    margin-right:0;
+}
+
+.wrapper:before, .wrapper:after,
+.column:before, .column:after {
+    content: "";
+    display: table;
+}
+
+.wrapper:after,
+.column:after {
+    clear: both;
+}
+#mob_menu_overlay {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    z-index: 1999;
+    display: none;
+}
+#sidebar {
+    background-color: #eee;
+    padding-left: 0;
+    float: left;
+    min-height: 100%;
+    margin-top: 50px;
+    position: fixed;
+    z-index: 1999;
+    box-shadow: 0 0px 5px rgba(0,0,0,.25);
+    max-width: 225px;
+}
+
+#sidebar .collapse.in {
+    display: inline;
+}
+
+#sidebar > .nav>li>a {
+    white-space: nowrap;
+    overflow: hidden;
+}
+#menu h4 {
+    margin-left: 15px;
+}
+.participants a {
+    text-overflow: ellipsis;
+}
+.participants .input-icon.inactive{
+    color: #34495e;
+}
+#menu .pull-down {
+    position: absolute;
+    bottom: 50px;
+}
+.image-upload{
+    position: absolute;
+    right: 45px;
+    top: 5px;
+}
+.image-upload label {
+    cursor: pointer;
+}
+.chat_image {
+    max-width: 400px;
+}
+.dwnld_link {
+    display: block;
+    margin-top: 5px;
+}
+.audio_meta {
+    display: block;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 300px;
+}
+.navbar_participants {
+    display: none;
+}
+@media screen and (max-width: 768px) {
+    #sidebar {
+        min-width: 44px;
+    }
+    #sidebar .visible-xs {
+        display:inline !important;
+    }
+    #sidebar .collapse.in {
+        display: none;
+    }
+}
+@media screen and (min-width: 768px) {
+    .navbar-collapse .navbar-nav.navbar-right:last-child {
+        margin-right: 0px;
+    }
+    #menu .pull-down {
+        display: none;
+    }
+}
+@media screen and (max-width: 550px) {
+    .chat_image {
+        max-width: 300px;
+    }
+    #sidebar {
+        display:none;
+    }
+    .chat-box {
+        width: 100%;
+    }
+    .navbar_participants {
+        display: block;
+    }
+}
+@media screen and (max-width: 400px) {
+    .chat_image {
+        max-width: 250px;
+    }
+}
+@media screen and (max-width: 450px) {
+    .navbar_heading {
+        display: none;
+    }
+}

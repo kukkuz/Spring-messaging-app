@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="springChat">
+	<head>
+	  <meta charset="utf-8" />
+	  <title>lO/ Chat</title>
+	  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	  <link href="lib/flat-ui/dist/css/vendor/bootstrap.min.css" rel="stylesheet">
+	  <link href="lib/flat-ui/dist/css/flat-ui.css" rel="stylesheet">
+	  <link href="lib/angularjs-toaster/toaster.css" rel="stylesheet">
+	  <link href="css/chat.css" rel="stylesheet">
+	</head>
+	<body>
+		<div ng-controller="ChatController">
+			<toaster-container></toaster-container>
+            <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" id="nav_header">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-01">
+                        <span class="sr-only">Toggle navigation</span>
+                    </button>
+                    <a class="navbar-brand navbar_heading" href="#">lO/ Chat</a>
+                    <div class="navbar-brand navbar_participants">
+                        <ul class="nav navbar-nav" ng-if="participants.length > 0">
+                            <li class="dropdown" style="margin-top:-5px;background-color:#34495E">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                                   aria-expanded="false" style="background-color:#34495E" ng-click="navCollapse()">
+                                    {{sendTo == "" ? "Online" : sendTo}} <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li ng-repeat="participant in participants" ng-click="privateSending(participant.username)" repeat-done>
+                                        <a href="#">
+                                            <span class="input-icon fui-new" ng-class="{'inactive':sendTo != participant.username}" ng-show="participant.typing"></span>
+                                            <span class="input-icon fui-user" ng-class="{'inactive':sendTo != participant.username}" ng-show="!participant.typing"></span>
+                                            <span>{{participant.username}}</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="collapse navbar-collapse" id="navbar-collapse-01">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="#">{{username}}</a></li>
+                        <li><a href="logout">Logout</a></li>
+                    </ul>
+                </div><!-- /navbar-collapse -->
+            </nav><!-- /navbar -->
+            <div class="row">
+                <!-- sidebar -->
+                <div class="column col-sm-3 col-xs-1 sidebar-offcanvas drawer-mode" id="sidebar">
+                    <ul class="nav" id="menu">
+                        <!--<li><h4>Online [{{participants.length}}]</h4></li>-->
+                        <li ng-repeat="participant in participants" class="participants" ng-click="privateSending(participant.username)" repeat-done>
+                            <a href="#" data-toggle="tooltip" title="{{participant.username}}">
+                                <span class="input-icon fui-new"
+                                      ng-class="{'inactive':sendTo != participant.username}" ng-show="participant.typing"></span>
+                                <span class="input-icon fui-user"
+                                      ng-class="{'inactive':sendTo != participant.username}" ng-show="!participant.typing"></span>
+                                <span class="collapse in">{{participant.username}}</span>
+                            </a>
+                        </li>
+                        <li class="pull-down"><a href="#" data-toggle="offcanvas"><span class="fui-resize"></span></a></li>
+                    </ul>
+                </div>
+                <div id="mob_menu_overlay"></div>
+                <!-- /sidebar -->
+                <div class="row" style="margin: 10px;">
+                    <div class="column col-sm-3 col-xs-1" chat-box-prev></div>
+                    <div class="column col-sm-9 col-xs-11 chat-box">
+                        <div ng-repeat="h in history | orderBy: 'index'">
+                            <print-history></print-history>
+                        </div>
+                        <div ng-repeat="message in messages">
+                            <print-message></print-message>
+                        </div>
+                        <div ng-if="loading" class="popover visible_popover">
+                            <div class="popover-content">
+                                <img src="/img/spinner.gif"/>
+                                <span ng-if="loadingPercent == 0">Uploading your media...</span>
+                                <span ng-if="loadingPercent > 0 && loadingPercent < 100">
+                                    Uploading your media: <span ng-bind="loadingPercent"></span>% done...
+                                </span>
+                                <span ng-if="loadingPercent == 100">Finishing upload...</span>
+                            </div>
+                        </div>
+                        <div class="chat-input">
+                            <div class="form-group">
+                                <input id="newMessageInput" type="text" class="form-control"
+                                       placeholder="Write your message and hit enter..." ng-model="newMessage"
+                                       ng-keyup="$event.keyCode == 13 ? sendMessage() : startTyping()"/>
+                                <div class="image-upload" ng-if="!loading">
+                                    <label for="file-input"><span class="fui-clip"></span></label>
+                                    <input id="file-input" type="file" accept="image/*,video/*,audio/*"
+                                           style="display:none;" on-file-change="sendFile"/>
+                                </div>
+                                <span class="form-control-feedback fui-bubble"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+	    </div>
+	    <!-- /container -->
+
+		<!-- 3rd party -->
+		<script src="lib/angular/angular.min.js"></script>
+	    <script src="lib/angular-animate/angular-animate.min.js"></script>
+	    <script src="lib/angularjs-toaster/toaster.js"></script>
+	    <script src="lib/angularjs-scroll-glue/src/scrollglue.js"></script>
+	    <script src="lib/sockjs/sockjs.min.js"></script>
+        <script src="lib/stomp/lib/stomp.min.js"></script>
+        <script src="lib/flat-ui/dist/js/vendor/jquery.min.js"></script>
+        <script src="lib/flat-ui/dist/js/flat-ui.min.js"></script>
+        <script src="js/app.js"></script>
+        <!--<link href="lib/videojs/dist/video-js/video-js.css" rel="stylesheet">-->
+        <!--<script src="lib/videojs/dist/video-js/video.js"></script>-->
+        <script src="lib/ng-file-upload/dist/ng-file-upload.min.js"></script>
+
+		<!-- App -->
+		<script src="js/app.js"></script>
+		<script src="js/controllers.js"></script>
+		<script src="js/services.js"></script>
+		<script src="js/directives.js"></script>
+        <script type="text/javascript">
+            // sidebar toggle
+            $('[data-toggle=offcanvas]').click(function() {
+                $('#sidebar').toggleClass("drawer-mode");
+                if($('#sidebar').hasClass('drawer-mode'))
+                    hide_sidebar();
+                else
+                    show_sidebar();
+            });
+            var show_sidebar = function() {
+                // show sidebar
+                $('[data-toggle=offcanvas]').css({'display':'none'});
+                $('#sidebar').css({'min-width': '44px'}).animate({'min-width': '210px'}, 500, function () {
+                    $('#sidebar .participants span.collapse').toggleClass('hidden-xs').toggleClass('visible-xs');
+                    $('#mob_menu_overlay').css({'display': 'block', 'margin-left':'210px'});
+                });
+                $('#mob_menu_overlay').off('click').click(function(){
+                    $('#sidebar').toggleClass("drawer-mode");
+                    hide_sidebar();
+                });
+            }
+            var hide_sidebar = function() {
+                // hide sidebar
+                $('[data-toggle=offcanvas]').css({'display':'block'});
+                $('#sidebar').css({'min-width': '210px'}).animate({'min-width': '44px'}, 500, function () {
+                    $('#sidebar .participants span.collapse').toggleClass('hidden-xs').toggleClass('visible-xs');
+                    $('#mob_menu_overlay').css({'display': 'none', 'margin-left':'0px'});
+                });
+            }
+        </script>
+        <script type = "text/ng-template" id = "message.html">
+            <div class="popover visible_popover" ng-class="{'left':message.username == username, 'right': message.username != username}">
+                <div class="arrow"></div>
+                <h3 class="popover-title">
+                    <span ng-style="message.username != username && {'float': 'right'}">{{message.date.toLocaleDateString("en-AU", options)}}</span>
+                    <span ng-style="message.username == username && {'float': 'right'}">{{message.username == username ? "Me" : message.username}}</span>
+                    <span class="dwnld_link" ng-style="message.username != username && {'text-align': 'right'}"
+                          ng-if="message.image || message.video || message.audio">
+                        <a href="/chat/download/{{message.message}}" target="_blank">Download</a>
+                    </span>
+                </h3>
+                <div class="popover-content">
+                    <p ng-if="!message.image &amp;&amp; !message.video &amp;&amp; !message.audio">{{message.message}}</p>
+                    <p ng-if="message.image"><img class="chat_image" ng-src="/chat/download/{{message.message}}"/></p>
+                    <p ng-if="message.video"><video class="chat_image" controls on-video-load="/chat/download/{{message.message}}"/></p>
+                    <p ng-if="message.audio" style="position: relative">
+                        <!--<span class="audio_meta"></span>-->
+                        <canvas style="display:block"></canvas>
+                        <audio controls on-audio-load="/chat/download/{{message.message}}"></audio>
+                    </p>
+                </div>
+            </div>
+        </script>
+        <script type = "text/ng-template" id = "history.html">
+            <div class="popover visible_popover" ng-class="{'left':h.message.username == username, 'right': h.message.username != username}">
+                <div class="arrow"></div>
+                <h3 class="popover-title">
+                    <span ng-style="h.message.username != username && {'float': 'right'}">{{h.message.date.toLocaleDateString("en-AU", options)}}</span>
+                    <span ng-style="h.message.username == username && {'float': 'right'}">{{h.message.username == username ? "Me" : h.message.username}}</span>
+                    <span class="dwnld_link" ng-style="h.message.username != username && {'text-align': 'right'}"
+                          ng-if="h.message.image || h.message.video || h.message.audio">
+                        <a href="/chat/download/{{h.message.message}}" target="_blank">Download</a>
+                    </span>
+                </h3>
+                <div class="popover-content">
+                    <p ng-if="!h.message.image &amp;&amp; !h.message.video &amp;&amp; !h.message.audio">{{h.message.message}}</p>
+                    <p ng-if="h.message.image"><img class="chat_image" ng-src="/chat/download/{{h.message.message}}"/></p>
+                    <p ng-if="h.message.video"><video class="chat_image" controls on-video-load="/chat/download/{{h.message.message}}"/></p>
+                    <p ng-if="h.message.audio" style="position: relative">
+                        <!--<span class="audio_meta"></span>-->
+                        <canvas style="display:block"></canvas>
+                        <audio controls on-audio-load="/chat/download/{{h.message.message}}"></audio>
+                    </p>
+                </div>
+            </div>
+        </script>
+	</body>
+</html>

@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+<head>
+<style>
+div#mp3_player{ width:500px; height:130px; background:#fff; padding:5px; margin:50px auto; }
+div#mp3_player > div > audio{  width:500px; background:#000; float:left;  }
+div#mp3_player > canvas{ width:500px; height:100px; background:#fff; float:left; }
+</style>
+<script>
+// Create a new instance of an audio object and adjust some of its properties
+var audio = new Audio();
+audio.src = '/track1.mp3';
+audio.controls = true;
+audio.autoplay = true;
+// Establish all variables that your Analyser will use
+var canvas, ctx, source, context, analyser, fbc_array, bars, bar_x, bar_width, bar_height;
+// Initialize the MP3 player after the page loads all of its HTML into the window
+window.addEventListener("load", initMp3Player, false);
+function initMp3Player(){
+	document.getElementById('audio_box').appendChild(audio);
+	context = new (window.AudioContext || window.webkitAudioContext)();
+	analyser = context.createAnalyser(); // AnalyserNode method
+    analyser.fftSize = 256;
+	canvas = document.getElementById('analyser_render');
+	ctx = canvas.getContext('2d');
+	// Re-route audio playback into the processing graph of the AudioContext
+    //createMediaStreamSource for streaming source
+	source = context.createMediaElementSource(audio);
+	source.connect(analyser);
+	analyser.connect(context.destination);
+	frameLooper();
+
+    callme();
+}
+// frameLooper() animates any style of graphics you wish to the audio frequency
+// Looping at the default frame rate that the browser provides(approx. 60 FPS)
+function frameLooper(){
+	window.requestAnimationFrame(frameLooper);
+	fbc_array = new Uint8Array(analyser.frequencyBinCount);
+	analyser.getByteFrequencyData(fbc_array);
+	ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+	ctx.fillStyle = '#000'; // Color of the bars
+	bars = 100;
+	for (var i = 0; i < bars; i++) {
+		bar_x = i * 3;
+		bar_width = 2.5;
+		bar_height = -(fbc_array[i] / 3);
+		//  fillRect( x, y, width, height ) // Explanation of the parameters below
+        var barH = bar_height;
+        var increment = 2.5;
+        while(barH < 0) {
+            ctx.fillRect(bar_x, canvas.height + bar_height - barH, bar_width, increment);
+            barH += increment + 0.5;
+        }
+	}
+}
+var canvas_, canvasCtx, bufferLength;
+function callme()
+{
+    canvas_ = document.getElementById('analyser_render_');
+    canvasCtx = canvas_.getContext('2d');
+
+    bufferLength = analyser.frequencyBinCount;
+    draw();
+}
+// draw an oscilloscope of the current audio source
+//var frameSlower = 0;
+function draw() {
+//    frameSlower++;
+    var drawVisual = requestAnimationFrame(draw);
+//    if(frameSlower < 2)
+//        return;
+//    frameSlower = 0;
+    analyser.getByteTimeDomainData(fbc_array);
+    canvasCtx.fillStyle = '#fff';
+    canvasCtx.fillRect(0, 0, canvas_.width, canvas_.height);
+    canvasCtx.lineWidth = 1;
+    canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
+    canvasCtx.beginPath();
+    var sliceWidth = canvas_.width * 1.0 / bufferLength;
+    var x = 0;
+    for(var i = 0; i < bufferLength; i++) {
+        var v = fbc_array[i] / 128.0;
+        var y = v * canvas_.height/2;
+        if(i === 0)
+            canvasCtx.moveTo(x, y);
+        else
+            canvasCtx.lineTo(x, y);
+        x += sliceWidth;
+    }
+    canvasCtx.lineTo(canvas_.width, canvas_.height/2);
+    canvasCtx.stroke();
+}
+</script>
+</head>
+<body>
+<div id="mp3_player">
+    <canvas id="analyser_render"></canvas>
+    <div id="audio_box"></div>
+    <canvas id="analyser_render_"></canvas>
+</div>
+</body>
+</html>
+
+
+
+<!--
+
+https://github.com/mdn/voice-change-o-matic/blob/gh-pages/scripts/app.js
+https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Visualizations_with_Web_Audio_API
+
+-->
