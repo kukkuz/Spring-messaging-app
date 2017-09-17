@@ -1,8 +1,8 @@
 package com.kukkuz.chat.mongo.converter;
 
+import com.kukkuz.chat.mongo.model.ChatHistory;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import com.kukkuz.chat.mongo.model.ChatHistory;
 import com.kukkuz.chat.mongo.model.ChatMessage;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;

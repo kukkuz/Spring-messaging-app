@@ -84,22 +84,20 @@ angular.module('springChat.controllers', ['toaster', 'ngFileUpload'])
                 && list.indexOf(message.to) !== -1);
             };
 
-            $scope.sendFile = function () {
+            $scope.sendFile = function (event) {
                 if ($scope.sendTo == null || $scope.sendTo == "")
                     return;
-                var $this = document.getElementById('file-input');
+                var $this = event.target;
                 $scope.uploadFileType = $this.files[0].type.split('/')[0];
                 var size = $this.files[0].size / (1024 * 1024);
                 if ($scope.uploadFileType != "image" && $scope.uploadFileType != "video" && $scope.uploadFileType != "audio") {
                     toaster.pop('error', 'Error', 'Select only image/video/audio files');
-                    $scope.$apply();
                     console.log("select only image/video/audio files...")
                     return;
                 }
                 if (size > 2048) {
-                    toaster.pop('error', 'Error', 'Select only files < 2 GB');
-                    $scope.$apply();
-                    console.log("Select only files <  GB...")
+                    toaster.pop('error', 'Error', 'Select only files < 0.5 GB');
+                    console.log("Select only files <  0.5 GB...")
                     return;
                 }
 
@@ -136,7 +134,6 @@ angular.module('springChat.controllers', ['toaster', 'ngFileUpload'])
                         username: $scope.username,
                         to: $scope.sendTo
                     });
-                    // $scope.$apply();
                 } else if ($scope.uploadFileType == "video") {
                     // video
                     chatSocket.send(destination, {}, JSON.stringify({
@@ -152,7 +149,6 @@ angular.module('springChat.controllers', ['toaster', 'ngFileUpload'])
                         username: $scope.username,
                         to: $scope.sendTo
                     });
-                    // $scope.$apply();
                 } else {
                     // audio
                     chatSocket.send(destination, {}, JSON.stringify({

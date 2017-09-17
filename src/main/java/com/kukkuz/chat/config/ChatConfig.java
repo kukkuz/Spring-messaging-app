@@ -1,7 +1,7 @@
 package com.kukkuz.chat.config;
 
-import com.kukkuz.chat.event.PresenceEventListener;
 import com.kukkuz.chat.event.ParticipantRepository;
+import com.kukkuz.chat.event.PresenceEventListener;
 import org.springframework.context.annotation.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
@@ -9,7 +9,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 public class ChatConfig {
 
     public static class Destinations {
-
         private static final String LOGIN = "/topic/chat.login";
         private static final String LOGOUT = "/topic/chat.logout";
     }
@@ -28,4 +27,5 @@ public class ChatConfig {
     public ParticipantRepository participantRepository() {
         return new ParticipantRepository();
     }
+
 }

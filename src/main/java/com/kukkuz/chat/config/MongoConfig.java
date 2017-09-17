@@ -1,10 +1,10 @@
 package com.kukkuz.chat.config;
 
-import com.kukkuz.chat.mongo.converter.ChatHistoryWriterConverter;
-import com.kukkuz.chat.mongo.event.ChatHistoryCascadeSaveMongoEventListener;
 import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
+import com.kukkuz.chat.mongo.converter.ChatHistoryWriterConverter;
 import com.kukkuz.chat.mongo.event.CascadeSaveMongoEventListener;
+import com.kukkuz.chat.mongo.event.ChatHistoryCascadeSaveMongoEventListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;

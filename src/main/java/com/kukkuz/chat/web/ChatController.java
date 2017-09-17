@@ -3,9 +3,9 @@ package com.kukkuz.chat.web;
 import com.kukkuz.chat.domain.ChatTypingStatus;
 import com.kukkuz.chat.event.LoginEvent;
 import com.kukkuz.chat.event.ParticipantRepository;
+import com.kukkuz.chat.mongo.model.ChatHistory;
 import com.kukkuz.chat.mongo.model.ChatMessage;
 import com.kukkuz.chat.mongo.repository.ChatHistoryRepository;
-import com.kukkuz.chat.mongo.model.ChatHistory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -70,7 +70,6 @@ public class ChatController {
 
     @MessageMapping("/chat.private.{username}")
     public void filterPrivateMessage(@Payload ChatMessage message, @DestinationVariable("username") String username, Principal principal) {
-
         message.setUsername(principal.getName());
         // Destination message handler converts it /user/exchange.amq.direct/chat.message for the particular session
         simpMessagingTemplate.convertAndSend("/user/" + username + "/exchange/amq.direct/chat.message", message);
